@@ -2,13 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
   <title>TurboRef</title>
   <base href="/">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+  <!-- Office JavaScript API -->
+  <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.debug.js"></script>
+
+  <!-- <link rel="stylesheet" href="node_modules/office-ui-fabric-js/dist/css/fabric.min.css" /> -->
+  <!-- <link rel="stylesheet" href="node_modules/office-ui-fabric-js/dist/css/fabric.components.css" /> -->
 </head>
-<body>
-  <app-root></app-root>
+<body class="ms-font-m ms-welcome">
+  <h2 id="sideload-msg" className='ms-fontSize-su ms-fontColor-neutralPrimary'>Please sideload your addin to see app body.</h2>
+  <app-home></app-home>
 </body>
 </html>
