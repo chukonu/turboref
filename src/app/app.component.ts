@@ -23,11 +23,13 @@ export class AppComponent implements OnInit {
       await Excel.run(async context => {
         context.workbook.onSelectionChanged.add((window as any).Zone.current.wrap(async (args: Excel.SelectionChangedEventArgs) => {
           let activeCell = args.workbook.getActiveCell();
-          activeCell.load("address");
-          activeCell.load('text');
-          await context.sync();
-
-          this.currtxt = activeCell.text[0][0];
+          let srctxtCell = activeCell.getOffsetRange(0, -1);
+          try {
+            srctxtCell.load('text');
+            await context.sync();
+          } catch (outOfRangeErr) { }
+          
+          this.currtxt = srctxtCell.text[0][0];
 
           if (!this.currtxt)
             return;
