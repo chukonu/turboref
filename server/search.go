@@ -22,14 +22,16 @@ type SearchResponse struct {
 }
 
 func searchHandler(w http.ResponseWriter, r *http.Request) {
+	jsonw := json.NewEncoder(w)
+
 	if r.Method != http.MethodGet {
-		json.NewEncoder(w).Encode(map[string]string{"error": "must use GET"})
+		jsonw.Encode(map[string]string{"error": "must use GET"})
 		return
 	}
 
 	err := r.ParseForm()
 	if err != nil {
-		log.Println(err)
+		jsonw.Encode(map[string]string{"error": err.Error()})
 		return
 	}
 
@@ -37,13 +39,13 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 
 	q := r.FormValue("q")
 	if q == "" {
-		json.NewEncoder(w).Encode(&SearchResponse{nil})
+		jsonw.Encode(&SearchResponse{nil})
 		return
 	}
 
 	rows, err := textsearch(q)
 	if err != nil {
-		log.Println(err)
+		jsonw.Encode(map[string]string{"error": err.Error()})
 		return
 	}
 
@@ -57,14 +59,14 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		)
 		err := rows.Scan(&rank, &source, &trnsln, &note)
 		if err != nil {
-			log.Println(nil)
+			jsonw.Encode(map[string]string{"error": err.Error()})
 			return
 		}
 		ref := Ref{rank, source, trnsln, note}
 		refs = append(refs, ref)
 	}
 
-	err = json.NewEncoder(w).Encode(&SearchResponse{refs})
+	err = jsonw.Encode(&SearchResponse{refs})
 	if err != nil {
 		log.Println(err)
 	}
