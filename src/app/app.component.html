@@ -2,10 +2,16 @@
   <img width="90" height="90" src="../../assets/logo-filled.png" alt="translation-references" title="translation-references" />
   <h1 class="ms-fontSize-su ms-fontWeight-light ms-fontColor-neutralPrimary">{{welcomeMessage}}</h1>
 </header> -->
-<div *ngIf="currtxt">{{ currtxt }}</div>
-<ul *ngIf="refs$ | async as refs">
-    <li *ngFor="let ref of refs">{{ ref | json }}</li>
-</ul>
+<main class="turbo-ref-main">
+    <div *ngIf="currtxt">{{ currtxt }}</div>
+    <ol *ngIf="refs$ | async as refs" class="ref-list">
+        <li *ngFor="let ref of refs">
+            <p>{{ ref.s }}</p>
+            <p>{{ ref.t }}</p>
+            <p class="ms-font-xs">{{ ref.n }}</p>
+        </li>
+    </ol>
+</main>
 <!-- <main class="ms-welcome__main">
   <h2 class="ms-font-xl ms-fontWeight-semilight ms-fontColor-neutralPrimary ms-u-slideUpIn20"> Discover what translation-references can do for you today! </h2>
   <ul class="ms-List ms-welcome__features ms-u-slideUpIn10">

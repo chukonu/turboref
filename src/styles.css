@@ -133,3 +133,23 @@ h6 {
     width: 100%;
   }
 }
+
+.turbo-ref-main {
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.ref-list {
+  font-family: 'Consolas', 'Courier New', Courier, monospace;
+}
+
+.ref-list li {
+  margin: 14px 0;
+}
+
+.ref-list p {
+  margin: 8px 0;
+  word-break: normal;
+  hyphens: auto;
+}
