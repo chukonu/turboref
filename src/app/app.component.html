@@ -15,7 +15,7 @@
                 <div *ngFor="let ref of refs.similar" class="ref-row">
                     <p [innerHTML]="highlightSimilar(ref.s)"></p>
                     <p [innerHTML]="ref.t"></p>
-                    <p class="ms-font-xs">{{ ref.t.length }} chars · {{ ref.n }}</p>
+                    <p class="ms-font-xs">{{ ref.s.length }}, {{ ref.t.length }} chars · {{ ref.n }}</p>
                 </div>
             </ng-container>
             <ng-template #noResult>No Result</ng-template>

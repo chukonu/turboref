@@ -116,7 +116,7 @@ export class AppComponent implements OnInit {
   }
 
   public highlightSimilar(txt: string): string {
-    let keywords = this.lastqry.match(/(\w+)/g);
+    let keywords = this.stripHtmlTags(this.lastqry).match(/(\w+)/g);
     if (keywords)
       keywords.forEach(kw => {
         txt = txt.replace(new RegExp(`\\b(${kw})\\b`, 'gi'), m => `<span class="highlighted">${m}</span>`);
