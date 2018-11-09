@@ -135,13 +135,12 @@ h6 {
 }
 
 .turbo-ref-main {
-  padding: 30px 20px;
   display: flex;
   flex-direction: column;
 }
 
 .ref-list {
-  font-family: 'Consolas', 'Courier New', Courier, monospace;
+  border-bottom: 0.8px solid rgba(51, 51, 51, 0.2);
 }
 
 .ref-list li {
@@ -152,4 +151,37 @@ h6 {
   margin: 8px 0;
   word-break: normal;
   hyphens: auto;
+}
+
+.tr-srctxt,
+.ref-row.tr-exact-match .trnsln {
+  font-family: 'Roboto Mono', 'Consolas', 'Courier New', Courier, monospace;
+}
+
+.tr-srctxt {
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+.turbo-ref-main .whitespace {
+  color: rgba(51, 51, 51, 0.2) !important;
+  user-select: none;
+}
+
+.tr-exact-match {
+  background-color: rgb(198, 239, 206);
+}
+
+.tr-srctxt,
+.tr-srctxt-cnt,
+.ref-row {
+  padding: 8px 12px;
+}
+
+.ref-row {
+  border-top: 0.8px solid rgba(51, 51, 51, 0.2);
+}
+
+.ref-row .highlighted {
+  background-color: rgba(255, 255, 204, .8);
 }

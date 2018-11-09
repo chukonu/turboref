@@ -14,9 +14,19 @@ export class AppComponent implements OnInit {
     private http: HttpClient
   ) {}
 
-  refs$: Observable<any[]>;
+  refs$: Observable<{ exact: any[], similar: any[] }>;
   currtxt: string;
   lastqry: string;
+
+  get whitespaceRendered(): string {
+    return this.renderWhitespace(this.currtxt);
+  }
+
+  renderWhitespace(txt: string): string {
+    // ·
+    return this.escapeHtml(txt).replace(/\s+/g,
+      (m) => `<span class="whitespace">${m.replace(/\s/g, '•')}</span>`);
+  }
 
   async ngOnInit() {
     try {
@@ -69,7 +79,16 @@ export class AppComponent implements OnInit {
         return;
 
       this.refs$ = this.http.get<{ r: any[] }>('/api/search', { params: { q: qry } })
-        .pipe(map<{ r: any[] }, any[]>(res => res.r))
+        .pipe(map<{ r: any[] }, { exact: any[], similar: any[] }>(res => {
+          if (!res.r) {
+            return { exact: [], similar: [] };
+          }
+          return {
+            exact: res.r.filter(ref => ref.s == this.currtxt).filter(
+              (value, index, self) => self.findIndex(x => x.t == value.t) == index),
+            similar: res.r.filter(ref => ref.s != this.currtxt)
+          };
+        }))
         .pipe(tap(() => this.lastqry = this.currtxt))
         .pipe(catchError(err => {
           this.logErr(err);
@@ -78,10 +97,30 @@ export class AppComponent implements OnInit {
     });
   }
 
-  private stripHtmlTags(html: string): string {
+  public stripHtmlTags(html: string): string {
     let div = document.createElement('div');
     div.innerHTML = html;
     let stripped = div.textContent || div.innerText || '';
     return stripped.trim();
+  }
+
+  private escapeHtml(html: string) {
+    var map = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    };
+    return html.replace(/[&<>"']/g, m => map[m]);
+  }
+
+  public highlightSimilar(txt: string): string {
+    let keywords = this.lastqry.match(/(\w+)/g);
+    if (keywords)
+      keywords.forEach(kw => {
+        txt = txt.replace(new RegExp(`\\b(${kw})\\b`, 'gi'), m => `<span class="highlighted">${m}</span>`);
+      });
+    return txt;
   }
 }
