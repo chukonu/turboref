@@ -33,6 +33,8 @@ export class AppComponent implements OnInit {
       await Excel.run(async context => {
         context.workbook.onSelectionChanged.add(this.selectionChangeHandlerFn());
         await context.sync();
+        
+        this.onSelectionChanged(null);
       });
     } catch (err) {
       this.logErr(err);
