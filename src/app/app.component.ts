@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import * as OfficeHelpers from '@microsoft/office-js-helpers';
-import { Observable } from 'rxjs';
-import { map } from "rxjs/operators";
+import { Observable, of } from 'rxjs';
+import { catchError, map, tap } from "rxjs/operators";
 
 @Component({
   selector: 'app-home',
@@ -16,6 +16,7 @@ export class AppComponent implements OnInit {
 
   refs$: Observable<any[]>;
   currtxt: string;
+  lastqry: string;
 
   async ngOnInit() {
     try {
@@ -23,9 +24,8 @@ export class AppComponent implements OnInit {
         context.workbook.onSelectionChanged.add(this.selectionChangeHandlerFn());
         await context.sync();
       });
-    } catch (error) {
-      OfficeHelpers.UI.notify(error);
-      OfficeHelpers.Utilities.log(error);
+    } catch (err) {
+      this.logErr(err);
     }
   }
 
@@ -33,12 +33,16 @@ export class AppComponent implements OnInit {
     return (window as any).Zone.current.wrap(this.onSelectionChanged.bind(this), 'onSelectionChangedCallback');
   }
 
+  private logErr(err: Error) {
+    OfficeHelpers.UI.notify(err);
+    OfficeHelpers.Utilities.log(err);
+  }
+
   async onSelectionChanged(args: Excel.SelectionChangedEventArgs) {
     try {
       await this._onSelectionChanged(args);
     } catch (err) {
-      OfficeHelpers.UI.notify(err);
-      OfficeHelpers.Utilities.log(err);
+      this.logErr(err);
     }
   }
 
@@ -59,8 +63,25 @@ export class AppComponent implements OnInit {
       if (!this.currtxt)
         return;
 
-      this.refs$ = this.http.get<{ r: any[] }>('/api/search', { params: { q: this.currtxt } })
-        .pipe(map(res => res.r));
+      let qry = this.stripHtmlTags(this.currtxt);
+
+      if (qry == this.lastqry)
+        return;
+
+      this.refs$ = this.http.get<{ r: any[] }>('/api/search', { params: { q: qry } })
+        .pipe(map<{ r: any[] }, any[]>(res => res.r))
+        .pipe(tap(() => this.lastqry = this.currtxt))
+        .pipe(catchError(err => {
+          this.logErr(err);
+          return of(null);
+        }));
     });
+  }
+
+  private stripHtmlTags(html: string): string {
+    let div = document.createElement('div');
+    div.innerHTML = html;
+    let stripped = div.textContent || div.innerText || '';
+    return stripped.trim();
   }
 }
