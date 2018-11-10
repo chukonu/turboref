@@ -6,22 +6,35 @@
     <div *ngIf="currtxt" class="tr-srctxt ms-font-l" [innerHTML]="whitespaceRendered"></div>
     <div *ngIf="currtxt" class="tr-srctxt-cnt ms-font-xs">{{ currtxt.length }} chars</div>
     <ng-container *ngIf="currtxt">
-        <div *ngIf="refs$ | async as refs; else loading;" class="ref-list">
+        <div *ngIf="refs$ | async as refs; else loading;">
             <ng-container *ngIf="refs && (refs.exact.length || refs.exact.length); else noResult">
-                <div *ngFor="let ref of refs.exact" class="ref-row tr-exact-match">
-                    <p class="trnsln ms-font-l" [innerHTML]="renderWhitespace(ref.t)"></p>
-                    <p class="ms-font-xs">{{ ref.t.length }} chars · {{ ref.n }}</p>
-                </div>
-                <div *ngFor="let ref of refs.similar" class="ref-row">
-                    <p [innerHTML]="highlightSimilar(ref.s)"></p>
-                    <p [innerHTML]="ref.t"></p>
-                    <p class="ms-font-xs">{{ ref.s.length }}, {{ ref.t.length }} chars · {{ ref.n }}</p>
+                <div class="ref-list">
+                    <div *ngFor="let ref of refs.exact; index as i" class="ref-row tr-exact-match">
+                        <p class="trnsln ms-font-l" [innerHTML]="renderWhitespace(ref.t)"></p>
+                        <p class="ms-font-xs">{{ ref.t.length }} chars · {{ ref.n }}</p>
+                        <div class="actions">
+                            <button *ngIf="!ref.isToBeAdopted && !ref.hasBeenAdopted" class="ms-Button" (click)="ref.isToBeAdopted = true">Adopt</button>
+                            <div *ngIf="ref.isToBeAdopted" class="adopt-confirm">
+                                <div class="prompt">Do you want to copy this to `{{currCellAddr}}`?</div>
+                                <button class="ms-Button" (click)="ref.isToBeAdopted = false; adopt(refs, 'exact', i)">Yes</button>
+                                <button class="ms-Button" (click)="ref.isToBeAdopted = false">No</button>
+                            </div>
+                        </div>
+                        <div *ngIf="ref.hasBeenAdopted">Adopted</div>
+                    </div>
+                    <div *ngFor="let ref of refs.similar" class="ref-row">
+                        <p [innerHTML]="highlightSimilar(ref.s)"></p>
+                        <p [innerHTML]="ref.t"></p>
+                        <p class="ms-font-xs">{{ ref.s.length }}, {{ ref.t.length }} chars · {{ ref.n }}</p>
+                    </div>
                 </div>
             </ng-container>
-            <ng-template #noResult>No Result</ng-template>
+            <ng-template #noResult>
+                <div class="sign">No Result</div>
+            </ng-template>
         </div>
         <ng-template #loading>
-            <div>Please wait...</div>
+            <div class="sign">Please wait...</div>
         </ng-template>
     </ng-container>
 </main>

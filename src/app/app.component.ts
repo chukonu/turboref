@@ -18,6 +18,8 @@ export class AppComponent implements OnInit {
   currtxt: string;
   lastqry: string;
 
+  currCellAddr: string;
+
   get whitespaceRendered(): string {
     return this.renderWhitespace(this.currtxt);
   }
@@ -61,6 +63,7 @@ export class AppComponent implements OnInit {
   private async _onSelectionChanged(_: Excel.SelectionChangedEventArgs) {
     await Excel.run(async ctx => {
       let activeCell = ctx.workbook.getActiveCell();
+      activeCell.load('address');
       let srctxtCell = activeCell.getOffsetRange(0, -1);
       try {
         srctxtCell.load('text');
@@ -74,6 +77,8 @@ export class AppComponent implements OnInit {
 
       if (!this.currtxt)
         return;
+
+      this.currCellAddr = activeCell.address;
 
       let qry = this.stripHtmlTags(this.currtxt);
 
@@ -124,5 +129,22 @@ export class AppComponent implements OnInit {
         txt = txt.replace(new RegExp(`\\b(${kw})\\b`, 'gi'), m => `<span class="highlighted">${m}</span>`);
       });
     return txt;
+  }
+
+  async adopt(refs: any, source: string, index: number) {
+    if (source != 'exact')
+      return;
+    try {
+      await Excel.run(async ctx => {
+        let selected = ctx.workbook.getSelectedRange();
+        selected.values = [ [ refs.exact[index].t ] ];
+        await ctx.sync();
+      });
+    } catch (err) {
+      this.logErr(err);
+      return;
+    }
+    refs.exact.forEach(ref => ref.hasBeenAdopted = false);
+    refs.exact[index].hasBeenAdopted = true;
   }
 }
