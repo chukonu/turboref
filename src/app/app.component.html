@@ -7,7 +7,7 @@
     <div *ngIf="currtxt" class="tr-srctxt-cnt ms-font-xs">{{ currtxt.length }} chars</div>
     <ng-container *ngIf="currtxt">
         <div *ngIf="refs$ | async as refs; else loading;">
-            <ng-container *ngIf="refs && (refs.exact.length || refs.exact.length); else noResult">
+            <ng-container *ngIf="refs && (refs.exact.length || refs.similar.length); else noResult">
                 <div class="ref-list">
                     <div *ngFor="let ref of refs.exact; index as i" class="ref-row tr-exact-match">
                         <p class="trnsln ms-font-l" [innerHTML]="renderWhitespace(ref.t)"></p>
