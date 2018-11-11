@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	_ "github.com/lib/pq"
 )
@@ -29,13 +30,22 @@ func main() {
 	connectDB()
 	defer db.Close()
 
+	port, found := os.LookupEnv("PORT")
+	if found == true {
+		port = fmt.Sprintf(":%s", port)
+	} else {
+		port = ":8080"
+	}
+
 	fs := http.FileServer(http.Dir("dist/turbo-ref"))
 	http.Handle("/", fs)
 
 	http.HandleFunc("/api/search", searchHandler)
 
 	log.Println("Listening...")
-	svrErr := http.ListenAndServeTLS(":3000", "certs/server.crt", "certs/server.key", nil)
+
+	// svrErr := http.ListenAndServeTLS(":3000", "certs/server.crt", "certs/server.key", nil)
+	svrErr := http.ListenAndServe(port, nil)
 	if svrErr != nil {
 		log.Fatal(svrErr)
 	}
