@@ -156,7 +156,7 @@ h6 {
 
 .tr-srctxt,
 .ref-row.tr-exact-match .trnsln {
-  font-family: 'Roboto Mono', 'Consolas', 'Courier New', Courier, monospace;
+  font-family: 'Roboto Mono', 'Consolas', 'Andale Mono', 'Monaco', 'Menlo', 'Courier New', Courier, monospace;
 }
 
 .tr-srctxt {
@@ -164,7 +164,7 @@ h6 {
   hyphens: auto;
 
   padding-top: 1.5em !important;
-  line-height: 2em;
+  line-height: 1.88em;
 }
 
 .turbo-ref-main .whitespace {
@@ -179,6 +179,7 @@ h6 {
 .tr-srctxt,
 .tr-srctxt-cnt,
 .turbo-ref-main .sign,
+.enable-preview-container,
 .ref-row {
   padding: 8px 12px;
 }
@@ -199,6 +200,15 @@ h6 {
   display: block;
 }
 
+.ref-row ul {
+  padding-left: 36px;
+}
+
+.ref-text {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
 .turbo-ref-main .sign {
   font-size: larger;
   padding-top: 28px !important;
@@ -208,8 +218,13 @@ h6 {
 .adopt-confirm .prompt {
   margin-top: 18px;
   margin-bottom: 8px;
+  color: #e81123;
 }
 
 .adopt-confirm button + button {
   margin-left: 12px;
+}
+
+.enable-preview-container .related-results-cnt {
+  margin-right: 2em;
 }

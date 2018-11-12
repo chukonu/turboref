@@ -4,29 +4,47 @@
 </header> -->
 <main class="turbo-ref-main">
     <div *ngIf="currtxt" class="tr-srctxt ms-font-l" [innerHTML]="whitespaceRendered"></div>
-    <div *ngIf="currtxt" class="tr-srctxt-cnt ms-font-xs">{{ currtxt.length }} chars</div>
+    <div *ngIf="currtxt" class="tr-srctxt-cnt ms-font-xs ms-fontColor-neutralSecondary">{{ currtxt.length }} chars</div>
     <ng-container *ngIf="currtxt">
         <div *ngIf="refs$ | async as refs; else loading;">
-            <ng-container *ngIf="refs && (refs.exact.length || refs.similar.length); else noResult">
+            <ng-container *ngIf="(refs?.exact?.length || refs?.similar?.length); else noResult">
                 <div class="ref-list">
-                    <div *ngFor="let ref of refs.exact; index as i" class="ref-row tr-exact-match">
-                        <p class="trnsln ms-font-l" [innerHTML]="renderWhitespace(ref.t)"></p>
-                        <p class="ms-font-xs">{{ ref.t.length }} chars · {{ ref.n }}</p>
-                        <div class="actions">
-                            <button *ngIf="!ref.isToBeAdopted && !ref.hasBeenAdopted" class="ms-Button" (click)="ref.isToBeAdopted = true">Adopt</button>
-                            <div *ngIf="ref.isToBeAdopted" class="adopt-confirm">
-                                <div class="prompt">Do you want to copy this to `{{currCellAddr}}`?</div>
-                                <button class="ms-Button" (click)="ref.isToBeAdopted = false; adopt(refs, 'exact', i)">Yes</button>
-                                <button class="ms-Button" (click)="ref.isToBeAdopted = false">No</button>
+                    <ng-container *ngIf="refs.exact?.length">
+                        <div class="ref-row ms-bgColor-neutralLight ms-fontColor-black">{{ refs.exact.length }} exact {{ refs.exact.length > 1 ? 'matches' : 'match' }}</div>
+                        <div *ngFor="let ref of refs.exact; index as i" class="ref-row tr-exact-match">
+                            <p class="trnsln ms-font-l" [innerHTML]="renderWhitespace(ref.t)"></p>
+                            <p class="ms-font-xs ms-fontColor-neutralSecondary">{{ ref.n }} · {{ ref.t.length }} chars</p>
+                            <div class="actions">
+                                <button *ngIf="!ref.isToBeAdopted && !ref.hasBeenAdopted" class="ms-Button" (click)="ref.isToBeAdopted = true">Adopt</button>
+                                <div *ngIf="ref.isToBeAdopted" class="adopt-confirm">
+                                    <div class="prompt">Do you want to copy this to `{{currCellAddr}}`?</div>
+                                    <button class="ms-Button" (click)="ref.isToBeAdopted = false; adopt(refs, 'exact', i)">Yes</button>
+                                    <button class="ms-Button" (click)="ref.isToBeAdopted = false">No</button>
+                                </div>
                             </div>
+                            <div *ngIf="ref.hasBeenAdopted">Adopted</div>
                         </div>
-                        <div *ngIf="ref.hasBeenAdopted">Adopted</div>
-                    </div>
-                    <div *ngFor="let ref of refs.similar" class="ref-row">
-                        <p [innerHTML]="highlightSimilar(ref.s)"></p>
-                        <p [innerHTML]="ref.t"></p>
-                        <p class="ms-font-xs">{{ ref.s.length }}, {{ ref.t.length }} chars · {{ ref.n }}</p>
-                    </div>
+                    </ng-container>
+                    <ng-container *ngIf="refs.similar?.length">
+                        <div class="ref-row enable-preview-container ms-bgColor-neutralLight ms-fontColor-black">
+                            <span class="related-results-cnt">{{ refs.similar.length }} related {{ refs.similar.length > 1 ? 'results' : 'result' }}</span>
+                            <label>
+                                <input type="checkbox" [(ngModel)]="isInPlainTextMode">
+                                <span>Plain text</span>
+                            </label>
+                        </div>
+                        <div *ngFor="let ref of refs.similar" class="ref-row">
+                            <ng-container *ngIf="isInPlainTextMode; else previewMode">
+                                <div class="ref-text" [innerHTML]="highlightSimilar(escapeHtml(ref.s))"></div>
+                                <div class="ref-text">{{ ref.t }}</div>
+                            </ng-container>
+                            <ng-template #previewMode>
+                                <div class="ref-text" [innerHTML]="highlightSimilar(ref.s)"></div>
+                                <div class="ref-text" [innerHTML]="ref.t"></div>
+                            </ng-template>
+                            <p class="ms-font-xs ms-fontColor-neutralSecondary">{{ ref.n }} · {{ ref.s.length }}, {{ ref.t.length }} chars</p>
+                        </div>
+                    </ng-container>
                 </div>
             </ng-container>
             <ng-template #noResult>

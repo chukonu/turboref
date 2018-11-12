@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import * as OfficeHelpers from '@microsoft/office-js-helpers';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from "rxjs/operators";
+import { Ref } from './ref';
 
 @Component({
   selector: 'app-home',
@@ -14,7 +15,7 @@ export class AppComponent implements OnInit {
     private http: HttpClient
   ) {}
 
-  refs$: Observable<{ exact: any[], similar: any[] }>;
+  refs$: Observable<{ exact: Ref[], similar: Ref[] }>;
   currtxt: string;
   lastqry: string;
 
@@ -23,6 +24,8 @@ export class AppComponent implements OnInit {
   get whitespaceRendered(): string {
     return this.renderWhitespace(this.currtxt);
   }
+
+  isInPlainTextMode: boolean = true;
 
   renderWhitespace(txt: string): string {
     // ·
@@ -81,19 +84,22 @@ export class AppComponent implements OnInit {
       this.currCellAddr = activeCell.address;
 
       let qry = this.stripHtmlTags(this.currtxt);
+      let sentences: string[] = ((window as any).nlp as any)(qry).sentences().data().map(x => x.normal);
+      sentences.unshift(qry);
 
       if (qry == this.lastqry)
         return;
 
-      this.refs$ = this.http.get<{ r: any[] }>('/api/search', { params: { q: qry } })
-        .pipe(map<{ r: any[] }, { exact: any[], similar: any[] }>(res => {
-          if (!res.r) {
-            return { exact: [], similar: [] };
+      this.refs$ = this.http.post<Ref[]>('/api/search', sentences)
+        .pipe(map<Ref[], { exact: Ref[], similar: Ref[] }>(res => {
+          if (!res) {
+            return { exact: null, similar: null };
           }
           return {
-            exact: res.r.filter(ref => ref.s == this.currtxt).filter(
+            exact: res.filter(ref => ref.s == this.currtxt).filter(
               (value, index, self) => self.findIndex(x => x.t == value.t) == index),
-            similar: res.r.filter(ref => ref.s != this.currtxt)
+            similar: res.filter(ref => ref.s != this.currtxt).filter(
+              (value, index, self) => self.findIndex(x => x.s == value.s) == index)
           };
         }))
         .pipe(tap(() => this.lastqry = this.currtxt))
@@ -111,7 +117,7 @@ export class AppComponent implements OnInit {
     return stripped.trim();
   }
 
-  private escapeHtml(html: string) {
+  escapeHtml(html: string) {
     var map = {
       '&': '&amp;',
       '<': '&lt;',
