@@ -1,25 +1,10 @@
 package main
 
 import (
-	"database/sql"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 )
-
-// Ref is a single reference
-type Ref struct {
-	Rank        float32 `json:"r"`
-	Source      string  `json:"s"`
-	Translation string  `json:"t"`
-	Note        string  `json:"n"`
-}
-
-// SearchResponse is data returned from the API
-type SearchResponse struct {
-	Refs []Ref `json:"r"`
-}
 
 func searchHandler(w http.ResponseWriter, r *http.Request) {
 	jsonw := json.NewEncoder(w)
@@ -39,7 +24,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 
 	q := r.FormValue("q")
 	if q == "" {
-		jsonw.Encode(&SearchResponse{nil})
+		jsonw.Encode([]interface{}{})
 		return
 	}
 
@@ -66,30 +51,8 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		refs = append(refs, ref)
 	}
 
-	err = jsonw.Encode(&SearchResponse{refs})
+	err = jsonw.Encode(refs)
 	if err != nil {
 		log.Println(err)
 	}
-}
-
-func textsearch(text string) (rows *sql.Rows, err error) {
-	if text == "" {
-		return
-	}
-	query := `
-SELECT
-	ts_rank_cd(src, query) AS rank,
-	source,
-	translation,
-	note
-FROM
-	dyson0,
-	to_tsvector(source) src,
-	plainto_tsquery('%s') query
-WHERE
-		src @@ query
-ORDER BY rank DESC
-LIMIT 20`
-	rows, err = db.Query(fmt.Sprintf(query, text))
-	return
 }

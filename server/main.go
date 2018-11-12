@@ -40,7 +40,8 @@ func main() {
 	fs := http.FileServer(http.Dir("dist/turbo-ref"))
 	http.Handle("/", fs)
 
-	http.HandleFunc("/api/search", searchHandler)
+	// http.HandleFunc("/api/search", searchHandler)
+	http.HandleFunc("/api/search", searchHandler2)
 
 	log.Println("Listening...")
 
