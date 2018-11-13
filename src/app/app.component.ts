@@ -83,7 +83,7 @@ export class AppComponent implements OnInit {
 
       this.currCellAddr = activeCell.address;
 
-      let qry = this.stripHtmlTags(this.currtxt);
+      let qry = this.htmlToPlainText(this.currtxt);
       let sentences: string[] = ((window as any).nlp as any)(qry).sentences().data().map(x => x.normal);
       sentences.unshift(qry);
 
@@ -110,11 +110,18 @@ export class AppComponent implements OnInit {
     });
   }
 
-  public stripHtmlTags(html: string): string {
-    let div = document.createElement('div');
+  htmlToPlainText(html: string): string {
+    const linebreak = '$$LINEBREAK$$';
+    const div = document.createElement('div');
     div.innerHTML = html;
-    let stripped = div.textContent || div.innerText || '';
-    return stripped.trim();
+    div.querySelectorAll('p li').forEach(el => {
+      const span = document.createElement('span');
+      span.innerText = linebreak;
+      el.appendChild(span);
+    });
+    let plaintext = div.textContent || div.innerText || '';
+    plaintext = plaintext.replace(/\$\$LINEBREAK\$\$/g, '\n');
+    return plaintext.trim();
   }
 
   escapeHtml(html: string) {
@@ -129,7 +136,7 @@ export class AppComponent implements OnInit {
   }
 
   public highlightSimilar(txt: string): string {
-    let keywords = this.stripHtmlTags(this.lastqry).match(/(\w+)/g);
+    let keywords = this.htmlToPlainText(this.lastqry).match(/(\w+)/g);
     if (keywords)
       keywords.forEach(kw => {
         txt = txt.replace(new RegExp(`\\b(${kw})\\b`, 'gi'), m => `<span class="highlighted">${m}</span>`);
