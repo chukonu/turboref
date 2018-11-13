@@ -110,7 +110,7 @@ export class AppComponent implements OnInit {
     });
   }
 
-  htmlToPlainText(html: string): string {
+  private htmlToPlainText(html: string): string {
     const linebreak = '$$LINEBREAK$$';
     const div = document.createElement('div');
     div.innerHTML = html;
