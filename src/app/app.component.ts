@@ -114,11 +114,13 @@ export class AppComponent implements OnInit {
     const linebreak = '$$LINEBREAK$$';
     const div = document.createElement('div');
     div.innerHTML = html;
-    div.querySelectorAll('p li').forEach(el => {
+    const blocks = div.querySelectorAll('p, li');
+    for (let i = 0; i < blocks.length; i++) {
+      const b = blocks[i];
       const span = document.createElement('span');
       span.innerText = linebreak;
-      el.appendChild(span);
-    });
+      b.appendChild(span);
+    }
     let plaintext = div.textContent || div.innerText || '';
     plaintext = plaintext.replace(/\$\$LINEBREAK\$\$/g, '\n');
     return plaintext.trim();
