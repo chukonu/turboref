@@ -25,7 +25,9 @@
             "styles": [
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/office-ui-fabric-js/dist/js/fabric.min.js"
+            ]
           },
           "configurations": {
             "production": {

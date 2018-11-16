@@ -3,6 +3,7 @@
   "compilerOptions": {
     "outDir": "../out-tsc/app",
     "types": [
+      "office-ui-fabric-js/dist/js/fabric",
       "office-js"
     ]
   },
