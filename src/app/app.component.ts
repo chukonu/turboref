@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import * as OfficeHelpers from '@microsoft/office-js-helpers';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from "rxjs/operators";
@@ -7,13 +7,22 @@ import { Ref } from './ref';
 
 @Component({
   selector: 'app-home',
+  host: {
+    '(window:resize)': 'onResize($event)'
+  },
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
   constructor(
+    private chngDt: ChangeDetectorRef,
     private http: HttpClient
   ) {}
+
+  onResize(_) {
+    if (this.isPinned)
+      this.chngDt.detectChanges();
+  }
 
   refs$: Observable<{ exact: Ref[], similar: Ref[] }>;
   currtxt: string;
@@ -56,6 +65,7 @@ export class AppComponent implements OnInit {
   }
 
   async onSelectionChanged(args: Excel.SelectionChangedEventArgs) {
+    scrollTo(0, 0);
     try {
       await this._onSelectionChanged(args);
     } catch (err) {
@@ -161,5 +171,21 @@ export class AppComponent implements OnInit {
     }
     refs.exact.forEach(ref => ref.hasBeenAdopted = false);
     refs.exact[index].hasBeenAdopted = true;
+  }
+
+  isPinned: boolean = false;
+
+  pin() {
+    this.isPinned = !this.isPinned;
+  }
+
+  @ViewChild('srcPane') srcPane: ElementRef;
+
+  get srcPaneHeight(): string {
+    return getComputedStyle(this.srcPane.nativeElement).getPropertyValue('height');
+  }
+
+  get refListMarginTop(): string {
+    return this.isPinned ? this.srcPaneHeight : '0';
   }
 }

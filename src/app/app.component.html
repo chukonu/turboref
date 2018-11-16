@@ -2,59 +2,68 @@
   <img width="90" height="90" src="../../assets/logo-filled.png" alt="translation-references" title="translation-references" />
   <h1 class="ms-fontSize-su ms-fontWeight-light ms-fontColor-neutralPrimary">{{welcomeMessage}}</h1>
 </header> -->
-<main class="turbo-ref-main">
-    <div *ngIf="currtxt" class="tr-srctxt ms-font-l" [innerHTML]="whitespaceRendered"></div>
-    <div *ngIf="currtxt" class="tr-srctxt-cnt ms-font-xs ms-fontColor-neutralSecondary">{{ currtxt.length }} chars</div>
-    <ng-container *ngIf="currtxt">
-        <div *ngIf="refs$ | async as refs; else loading;">
-            <ng-container *ngIf="(refs?.exact?.length || refs?.similar?.length); else noResult">
-                <div class="ref-list">
-                    <ng-container *ngIf="refs.exact?.length">
-                        <div class="ref-row ms-bgColor-neutralLight ms-fontColor-black">{{ refs.exact.length }} exact {{ refs.exact.length > 1 ? 'matches' : 'match' }}</div>
-                        <div *ngFor="let ref of refs.exact; index as i" class="ref-row tr-exact-match">
-                            <p class="trnsln ms-font-l" [innerHTML]="renderWhitespace(ref.t)"></p>
-                            <p class="ms-font-xs ms-fontColor-neutralSecondary">{{ ref.n }} · {{ ref.t.length }} chars</p>
-                            <div class="actions">
-                                <button *ngIf="!ref.isToBeAdopted && !ref.hasBeenAdopted" class="ms-Button" (click)="ref.isToBeAdopted = true">Adopt</button>
-                                <div *ngIf="ref.isToBeAdopted" class="adopt-confirm">
-                                    <div class="prompt">Do you want to copy this to `{{currCellAddr}}`?</div>
-                                    <button class="ms-Button" (click)="ref.isToBeAdopted = false; adopt(refs, 'exact', i)">Yes</button>
-                                    <button class="ms-Button" (click)="ref.isToBeAdopted = false">No</button>
-                                </div>
-                            </div>
-                            <div *ngIf="ref.hasBeenAdopted">Adopted</div>
-                        </div>
-                    </ng-container>
-                    <ng-container *ngIf="refs.similar?.length">
-                        <div class="ref-row enable-preview-container ms-bgColor-neutralLight ms-fontColor-black">
-                            <span class="related-results-cnt">{{ refs.similar.length }} related {{ refs.similar.length > 1 ? 'results' : 'result' }}</span>
-                            <label>
-                                <input type="checkbox" [(ngModel)]="isInPlainTextMode">
-                                <span>Plain text</span>
-                            </label>
-                        </div>
-                        <div *ngFor="let ref of refs.similar" class="ref-row">
-                            <ng-container *ngIf="isInPlainTextMode; else previewMode">
-                                <div class="ref-text" [innerHTML]="highlightSimilar(escapeHtml(ref.s))"></div>
-                                <div class="ref-text">{{ ref.t }}</div>
-                            </ng-container>
-                            <ng-template #previewMode>
-                                <div class="ref-text" [innerHTML]="highlightSimilar(ref.s)"></div>
-                                <div class="ref-text" [innerHTML]="ref.t"></div>
-                            </ng-template>
-                            <p class="ms-font-xs ms-fontColor-neutralSecondary">{{ ref.n }} · {{ ref.s.length }}, {{ ref.t.length }} chars</p>
-                        </div>
-                    </ng-container>
-                </div>
-            </ng-container>
-            <ng-template #noResult>
-                <div class="sign">No Result</div>
-            </ng-template>
+<main class="turbo-ref-main" [class.pinned]="isPinned">
+    <div #srcPane class="src-pane">
+        <div>
+            <button class="ms-Button pin" title="{{ isPinned ? 'Unpin' : 'Pin' }}" (click)="pin()">
+                <i class="ms-Icon" [class.ms-Icon--Pin]="!isPinned" [class.ms-Icon--PinnedFill]="isPinned" aria-hidden="true"></i>
+            </button>
         </div>
-        <ng-template #loading>
-            <div class="sign">Please wait...</div>
-        </ng-template>
-    </ng-container>
+        <div *ngIf="currtxt" class="tr-srctxt" [innerHTML]="whitespaceRendered"></div>
+        <div *ngIf="currtxt" class="tr-srctxt-cnt ms-font-xs ms-fontColor-neutralSecondary">{{ currtxt.length }} chars</div>
+    </div>
+    <div [style.marginTop]="refListMarginTop">
+        <ng-container *ngIf="currtxt">
+            <div *ngIf="refs$ | async as refs; else loading;">
+                <ng-container *ngIf="(refs?.exact?.length || refs?.similar?.length); else noResult">
+                    <div class="ref-list">
+                        <ng-container *ngIf="refs.exact?.length">
+                            <div class="ref-row ms-bgColor-neutralLight ms-fontColor-black">{{ refs.exact.length }} exact {{ refs.exact.length > 1 ? 'matches' : 'match' }}</div>
+                            <div *ngFor="let ref of refs.exact; index as i" class="ref-row tr-exact-match">
+                                <p class="trnsln ms-font-l" [innerHTML]="renderWhitespace(ref.t)"></p>
+                                <p class="ms-font-xs ms-fontColor-neutralSecondary">{{ ref.n }} · {{ ref.t.length }} chars</p>
+                                <div class="actions">
+                                    <button *ngIf="!ref.isToBeAdopted && !ref.hasBeenAdopted" class="ms-Button" (click)="ref.isToBeAdopted = true">Adopt</button>
+                                    <div *ngIf="ref.isToBeAdopted" class="adopt-confirm">
+                                        <div class="prompt">Do you want to copy this to `{{currCellAddr}}`?</div>
+                                        <button class="ms-Button" (click)="ref.isToBeAdopted = false; adopt(refs, 'exact', i)">Yes</button>
+                                        <button class="ms-Button" (click)="ref.isToBeAdopted = false">No</button>
+                                    </div>
+                                </div>
+                                <div *ngIf="ref.hasBeenAdopted">Adopted</div>
+                            </div>
+                        </ng-container>
+                        <ng-container *ngIf="refs.similar?.length">
+                            <div class="ref-row enable-preview-container ms-bgColor-neutralLight ms-fontColor-black">
+                                <span class="related-results-cnt">{{ refs.similar.length }} related {{ refs.similar.length > 1 ? 'results' : 'result' }}</span>
+                                <label>
+                                    <input type="checkbox" [(ngModel)]="isInPlainTextMode">
+                                    <span>Plain text</span>
+                                </label>
+                            </div>
+                            <div *ngFor="let ref of refs.similar" class="ref-row">
+                                <ng-container *ngIf="isInPlainTextMode; else previewMode">
+                                    <div class="ref-text" [innerHTML]="highlightSimilar(escapeHtml(ref.s))"></div>
+                                    <div class="ref-text">{{ ref.t }}</div>
+                                </ng-container>
+                                <ng-template #previewMode>
+                                    <div class="ref-text" [innerHTML]="highlightSimilar(ref.s)"></div>
+                                    <div class="ref-text" [innerHTML]="ref.t"></div>
+                                </ng-template>
+                                <p class="ms-font-xs ms-fontColor-neutralSecondary">{{ ref.n }} · {{ ref.s.length }}, {{ ref.t.length }} chars</p>
+                            </div>
+                        </ng-container>
+                    </div>
+                </ng-container>
+                <ng-template #noResult>
+                    <div class="sign">No Result</div>
+                </ng-template>
+            </div>
+            <ng-template #loading>
+                <div class="sign">Please wait...</div>
+            </ng-template>
+        </ng-container>
+    </div>
 </main>
 <!-- <main class="ms-welcome__main">
   <h2 class="ms-font-xl ms-fontWeight-semilight ms-fontColor-neutralPrimary ms-u-slideUpIn20"> Discover what translation-references can do for you today! </h2>

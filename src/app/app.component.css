@@ -1,0 +1,26 @@
+.pin.ms-Button {
+  background-color: transparent;
+  outline: transparent;
+  user-select: none;
+  box-sizing: border-box;
+  padding: 0 4px;
+  width: 32px;
+  height: 32px;
+  min-width: 0;
+  border-width: initial;
+  border-style: none;
+  border-color: initial;
+  border-image: initial;
+  cursor: pointer;
+}
+
+.src-pane {
+  background-color: #fff;
+}
+
+.pinned .src-pane {
+  position: fixed;
+  left: 0;
+  right: 0;
+  box-shadow: 0 3.2px 7.2px 0 rgba(0,0,0,.132), 0 0.6px 1.8px 0 rgba(0,0,0,.108);
+}

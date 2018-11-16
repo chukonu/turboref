@@ -137,6 +137,7 @@ h6 {
 .turbo-ref-main {
   display: flex;
   flex-direction: column;
+  padding-bottom: 100vh;
 }
 
 .ref-list {
@@ -163,8 +164,8 @@ h6 {
   word-wrap: break-word;
   hyphens: auto;
 
-  padding-top: 1.5em !important;
-  line-height: 1.88em;
+  line-height: 1.80em;
+  font-size: 16px;
 }
 
 .turbo-ref-main .whitespace {
