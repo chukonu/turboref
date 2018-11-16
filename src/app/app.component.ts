@@ -4,6 +4,7 @@ import * as OfficeHelpers from '@microsoft/office-js-helpers';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from "rxjs/operators";
 import { Ref } from './ref';
+import { RefsetFilterOption } from './refset-filter-option';
 
 @Component({
   selector: 'app-home',
@@ -29,6 +30,8 @@ export class AppComponent implements OnInit {
   lastqry: string;
 
   currCellAddr: string;
+
+  refSetList: RefsetFilterOption[];
 
   get whitespaceRendered(): string {
     return this.renderWhitespace(this.currtxt);
@@ -117,6 +120,24 @@ export class AppComponent implements OnInit {
           this.logErr(err);
           return of(null);
         }));
+      this.refs$.subscribe(data => {
+        if (!data || !data.similar)
+          return;
+        let sets = data.similar.reduce<RefsetFilterOption[]>((prev, curr) => {
+          let rfo: RefsetFilterOption;
+          if (rfo = prev.find(x => x.name == curr.n))
+            rfo.count++;
+          else
+            prev.push({ name: curr.n, count: 1 });
+          return prev;
+        }, [])
+        .sort((a, b) => {
+          if (a.count - b.count < 0) return 1;
+          if (a.count - b.count > 0) return -1;
+          return 0;
+        });
+        this.refSetList = sets;
+      });
     });
   }
 

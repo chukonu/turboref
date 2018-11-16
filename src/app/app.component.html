@@ -35,11 +35,22 @@
                         </ng-container>
                         <ng-container *ngIf="refs.similar?.length">
                             <div class="ref-row enable-preview-container ms-bgColor-neutralLight ms-fontColor-black">
-                                <span class="related-results-cnt">{{ refs.similar.length }} related {{ refs.similar.length > 1 ? 'results' : 'result' }}</span>
-                                <label>
-                                    <input type="checkbox" [(ngModel)]="isInPlainTextMode">
-                                    <span>Plain text</span>
-                                </label>
+                                <div>
+                                    <span class="related-results-cnt">{{ refs.similar.length }} related {{ refs.similar.length > 1 ? 'results' : 'result' }}</span>
+                                    <label>
+                                        <input type="checkbox" [(ngModel)]="isInPlainTextMode">
+                                        <span>Plain text</span>
+                                    </label>
+                                </div>
+                                <div *ngIf="refSetList?.length">
+                                    <fieldset>
+                                        <legend>Filter</legend>
+                                        <label *ngFor="let refset of refSetList" class="refset-filter-option">
+                                            <input type="checkbox">
+                                            <span>{{ refset.name }}&nbsp;({{ refset.count }})</span>
+                                        </label>
+                                    </fieldset>
+                                </div>
                             </div>
                             <div *ngFor="let ref of refs.similar" class="ref-row">
                                 <ng-container *ngIf="isInPlainTextMode; else previewMode">
