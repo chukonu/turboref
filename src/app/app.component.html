@@ -43,13 +43,16 @@
                                     </label>
                                 </div>
                                 <div *ngIf="refSetList?.length">
-                                    <fieldset>
-                                        <legend>Filter</legend>
-                                        <label *ngFor="let refset of refSetList" class="refset-filter-option">
-                                            <input type="checkbox">
-                                            <span>{{ refset.name }}&nbsp;({{ refset.count }})</span>
-                                        </label>
-                                    </fieldset>
+                                    <form #filterForm="ngForm">
+                                        <fieldset>
+                                            <legend>Filter</legend>
+                                            <label *ngFor="let refset of refSetList" class="refset-filter-option">
+                                                <input type="checkbox" name="{{ refset.name }}" ngModel (change)="filterBySet()">
+                                                <span>{{ refset.name }}&nbsp;({{ refset.count }})</span>
+                                            </label>
+                                        </fieldset>
+                                    </form>
+                                    <!-- <div>{{ filterForm.value | json }}</div> -->
                                 </div>
                             </div>
                             <div *ngFor="let ref of refs.similar" class="ref-row">

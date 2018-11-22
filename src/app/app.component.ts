@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { NgForm } from '@angular/forms';
 import * as OfficeHelpers from '@microsoft/office-js-helpers';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from "rxjs/operators";
@@ -208,5 +209,13 @@ export class AppComponent implements OnInit {
 
   get refListMarginTop(): string {
     return this.isPinned ? this.srcPaneHeight : '0';
+  }
+
+  @ViewChild('filterForm') filterForm: NgForm;
+
+  filterBySet() {
+    const formValue = this.filterForm.value;
+    const selectedSets = Object.keys(formValue).filter(setName => formValue[setName]);
+    console.log(selectedSets);
   }
 }
