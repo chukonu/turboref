@@ -1,27 +1,13 @@
 # TurboRef
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.1.5.
+TurboRef is an Excel add-in which can provide hints of closest translations when you're translating the cells in a spreadsheet.
 
-## Development server
+![Demo of TurboRef](/turboref-demo.gif)
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+## Why
 
-## Code scaffolding
+Some documents come in as spreadsheets, with the texts being HTML wrapped in cells. This is unwieldy if you want to ensure consistency throughout the document.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+This add-in shows the exact or closest translation when you jump from cell to cell in the document.
 
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+This was inspired by the [late Google Translator Toolkit](https://9to5google.com/2019/12/02/google-translator-toolkit-shutdown/), but it works straight in Excel!
